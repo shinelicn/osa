@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>横琴人寿 · 琴澳通 Demo</title>
+  <style>
+    html,body{height:100%;margin:0;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;background:#eef3f0;color:#16231f;display:grid;place-items:center}
+    .box{max-width:360px;text-align:center;padding:24px}
+    .bar{height:4px;background:#d9e6e1;border-radius:999px;overflow:hidden;margin-top:16px}
+    .bar span{display:block;height:100%;width:42%;background:#0e6f5c;border-radius:999px;animation:load 1s ease-in-out infinite alternate}
+    @keyframes load{from{transform:translateX(-60%)}to{transform:translateX(200%)}}
+  </style>
+</head>
+<body>
+  <div class="box">
+    <strong>正在载入 Demo...</strong>
+    <div class="bar"><span></span></div>
+  </div>
+  <script>
+    (async function(){
+      const parts = [
+        "chunks/part00.b64","chunks/part01.b64","chunks/part02.b64","chunks/part03.b64",
+        "chunks/part04.b64","chunks/part05.b64","chunks/part06.b64","chunks/part07.b64",
+        "chunks/part08.b64","chunks/part09.b64","chunks/part10.b64"
+      ];
+      const base64 = (await Promise.all(parts.map(p => fetch(p, { cache: "no-store" }).then(r => {
+        if (!r.ok) throw new Error("Failed to load " + p);
+        return r.text();
+      })))).join("").replace(/\s+/g, "");
+      const bin = atob(base64);
+      const bytes = Uint8Array.from(bin, ch => ch.charCodeAt(0));
+      const html = new TextDecoder("utf-8").decode(bytes);
+      document.open();
+      document.write(html);
+      document.close();
+    })().catch(function(err){
+      document.body.innerHTML = "<div class='box'><strong>Demo 载入失败</strong><p>请刷新页面重试。</p><small>" + String(err.message || err) + "</small></div>";
+    });
+  </script>
+</body>
+</html>
